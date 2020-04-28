@@ -1,0 +1,6 @@
+<h1>Organizations#index</h1>
+<p>Find me in app/views/organizations/index.html.erb</p>
+<h1>Organizations:</h1>
+<% @organizations.each do |org| %> 
+  <h2><%= org.name %> - subdomain: <%= org.subdomain %></h2>
+<% end %>
