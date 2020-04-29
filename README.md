@@ -109,7 +109,7 @@ This should start the server up on port `3000` by default.
 
 Visit lvh.me:3000 - Yay you're on rails.
 
-Now visit `lvh.me:3000/organizations`
+Now visit [lvh.me:3000/organizations](http://lvh.me:3000/organizations)
 
 You can see a full list of organizations.  
 
