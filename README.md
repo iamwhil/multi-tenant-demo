@@ -101,6 +101,8 @@ This ties everything together.  Now when we try to look up a User or an Organiza
 
 Give it a shot
 
+`bundle exec rake db:drop;bundle exec rake db:create;bundle exec rake db:migrate;bundle exec rake db:seed`
+
 `rails s`
 
 This should start the server up on port `3000` by default.
