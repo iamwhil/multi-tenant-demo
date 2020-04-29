@@ -1,0 +1,11 @@
+<h1>Users#show</h1>
+<p>Find me in app/views/users/show.html.erb</p>
+<p>Subdomain: <%= request.subdomain.inspect %></p>
+<p>Organization: <%= @organization.inspect %></p>
+<p>User: <%= @user.inspect %></p>
+<h1>User:</h1>
+<% if @user.nil? %>
+  No User # ... Subdomain is <%= request.subdomain.inspect %> which cooresponds to Organization: <%= @organization.inspect %>
+<% else %>
+  <h2><%= @user.name %> - email: <%= @user.email %> - organization: <%= @user.organization.name %></h2>
+<% end %>

@@ -1,0 +1,9 @@
+<h1>Users#all_users</h1>
+<p>Find me in app/views/users/all_users.html.erb</p>
+<p>Subdomain: <%= request.subdomain.inspect %></p>
+<p>Organization: <%= @organization.inspect %>
+<p>This method has called `Users.unscoped.all` so that they will be returned regardless of the subdomain / scope.</p>
+<h1>Users:</h1>
+<% @users.each do |user| %>
+  <h2><%= link_to user.name, user_path(user) %> - email: <%= user.email %> - organization: <%= user.organization.name %></h2>
+<% end %>
