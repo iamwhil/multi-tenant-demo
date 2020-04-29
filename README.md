@@ -26,13 +26,144 @@ There are 3 main ways to separate data.
 
 3) Scope based separation.  This has the lowest overhead, is natural to rails, its easy to create new accounts, and is very simple when it comes to data aggregation.  However, we have to be concious of what is shared and what is not.  What belongs to organizations, and what is shared. 
 
-## Subdomains
+## Tenant Namespacing
 
-Data separation could be done via url pathing -> `something.com/my_tenant/users` or subdomains `my_tenant.something.com.`  We will use subdomains because A. they objectively look better and B. if someone wants a custom domain it will be easier to accomodate.
+Tentant namespacing can be done via url pathing -> `something.com/my_tenant/users` or subdomains `my_tenant.something.com.`  We will use subdomains because A. they objectively look better and B. if someone wants a custom domain it will be easier to accomodate.
 
 Rails servers do not like to work with subdomains out of the box.  If you're running locally you'll notice that tenant.localhost:3000 does not point to our localhost.  So we need to have something that does allow us to work with tenants.  Some sort of external domain that will point to our localhost and work with subdomains.
 
-`tenant.lvh.me:3000` does just this.  Note the tenant and the port.
+`tenant.lvh.me:3000` does just this.  Note the tenant and the port - make sure they reflect your tenant and port.
 
 MacOS can work with the pow server. `www.pow.cx` This is actually a bit cleaner and friendlier than `lvh.me`.
+
+## Making it work.
+
+The ApplicationController (which all controllers inherit from) is where we enforce our multi tenancy.
+
+The first thing you will notice is:
+
+```
+def current_organization
+  Organization.find_by_subdomain(request.subdomain)
+end
+helper_method :current_organization
+```
+
+This method allows us to call current_organization in any of our controllers.  What it does is looks at the request's subdomain and attempts to find an organization based on the subdomain.
+The `helper_method :current_organization` creates a helper method for views.  We don't need to worry much about that.
+
+Next we see:
+```
+  around_action :scope_current_organization
+
+  private 
+
+...
+
+    def scope_current_organization
+      Organization.current_id = current_organization.id if current_organization
+      yield
+    ensure
+      Organization.current_id = nil
+    end
+```
+
+This around action occurs before and after the controller performs its actions.  Basically it calls the `Organization.current_id = current_organization.id if current_organization`  This sets the current_id on the Organization model.  On the Organization model we see:
+
+```
+  def self.current_id=(id)
+    Thread.current[:organization_id] = id
+  end
+
+  def self.current_id
+    Thread.current[:organization_id]
+  end
+```
+
+This allows us to have a class level accessor that is thread safe.  (We could do `cattr_accessor :current_id` but this is not thread safe and we could see weird bugs by trying to save a few lines.)
+
+Once the `Organization.current_id` is set - the controller can operate within the scope of the current_organization.
+
+Speaking of 'scope' - on any model we want to have scoped we can now add a default scope as seen on the User model.
+
+```
+class User < ApplicationRecord
+
+  belongs_to :organization
+  default_scope { where(organization_id: Organization.current_id) }
+
+end
+```
+
+This ties everything together.  Now when we try to look up a User or an Organization's users the default scope will look for the `Organization.current_id` which has been set by the controller during the around_action.
+
+## Bear witness!
+
+Give it a shot
+
+`rails s`
+
+This should start the server up on port `3000` by default.
+
+Visit lvh.me:3000 - Yay you're on rails.
+
+Now visit `lvh.me:3000/organizations`
+
+You can see a full list of organizations.  
+
+But this is not scoped to an organization!
+
+Exactly.  On our organizations model we have not defined a default scope.  So we can see all of them.  Which means if we have any data we want siloed to a given tenant - we need to make sure we define our scope!
+
+Okay.
+
+Now visit 'lvh.me:3000/users'
+
+There are no users?!  Thats right - we have a default scope on the User model - because we do not have an organization in scope - no subdomain - we do not have any users!
+
+So lets see them!
+
+Previously on our organizations index we saw that we have 2 organizations - pirates and robots.
+
+lets visit `pirates.lvh.me:3000/users` 2 users!
+Lets visit `robots.lvh.me:3000/users` 2 ... different users!
+
+Huzzah.
+
+Now its good to know that the default scope is pretty dang global!
+
+Lets check out our console `rails c`
+
+Lets see how many users we have!
+
+```
+User.count
+=> 0
+```
+
+Q: Where has our life gone wrong?! A: probably highschool. Better A: default scope!
+
+Remember the `Organization.current_id`? lets set that and try again.
+```
+Organization.current_id = 1
+User.count
+=> 2
+```
+
+Glorious! But only 2?  I thought we had 4 users?  We do.
+
+However we're still scoped.  To see all the users lets remove the scope!
+
+```
+User.unscoped.count
+=> 4
+```
+
+There they are.
+
+We can see this on the server too!
+
+`pirates.lvh.me:3000/all_users`
+
+Here in the Users controller we're set the users to `users=User.unscoped.all`
 

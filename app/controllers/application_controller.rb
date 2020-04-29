@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   private 
 
     def current_organization
-      Organization.find_by_subdomain!(request.subdomain)
+      Organization.find_by_subdomain(request.subdomain)
     end
     helper_method :current_organization
 
