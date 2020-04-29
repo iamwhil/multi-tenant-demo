@@ -3,7 +3,7 @@
 This README would normally document whatever steps are necessary to get the
 application up and running. It does not.
 
-This is a demo for a multi tenant system utilizing Ruby on Rails utilizing scopes to implement multi tenant functionality. It has 2 example models - Organizations and Users.  Users will belong to an Organization, and each Organization should be able to login via their own subdomain.
+This is a demo for a multi tenant system utilizing Ruby on Rails utilizing scopes to implement multi tenant functionality. It has 2 example models - Organizations and Users.  Users will belong to an Organization, and each Organization should be scoped via their subdomain.
 
 This is a demo which also explains to PAIRIN users why we will pursue a scope based multi-tenant system over a schema based system.  While both have there benefits, our circumstances and existing system mesh better with the scopes.
 
