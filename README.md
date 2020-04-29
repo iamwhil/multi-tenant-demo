@@ -34,7 +34,7 @@ Rails servers do not like to work with subdomains out of the box.  If you're run
 
 `tenant.lvh.me:3000` does just this.  Note the tenant and the port - make sure they reflect your tenant and port.
 
-MacOS can work with the pow server. `www.pow.cx` This is actually a bit cleaner and friendlier than `lvh.me`.
+MacOS can work with the pow server. [POW.cx](http://pow.cx). This is actually a bit cleaner and friendlier than `lvh.me`.
 
 ## Making it work.
 
