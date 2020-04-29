@@ -119,7 +119,7 @@ Exactly.  On our organizations model we have not defined a default scope.  So we
 
 Okay.
 
-Now visit 'lvh.me:3000/users'
+Now visit [lvh.me:3000/users](http://lvh.me:3000/users)
 
 There are no users?!  Thats right - we have a default scope on the User model - because we do not have an organization in scope - no subdomain - we do not have any users!
 
@@ -127,8 +127,8 @@ So lets see them!
 
 Previously on our organizations index we saw that we have 2 organizations - pirates and robots.
 
-lets visit `pirates.lvh.me:3000/users` 2 users!
-Lets visit `robots.lvh.me:3000/users` 2 ... different users!
+lets visit [pirates.lvh.me:3000/users](http://pirates.lvh.me:3000/users) 2 users!
+Lets visit [robots.lvh.me:3000/users](http://robots.lvh.me:3000/users) 2 ... different users!
 
 Huzzah.
 
